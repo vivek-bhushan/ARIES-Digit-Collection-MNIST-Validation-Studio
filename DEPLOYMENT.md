@@ -98,6 +98,6 @@ netlify deploy --prod --dir=.
 
 ## 🔒 Security Best Practices for Public Hosting
 
-1. **Admin Credentials**: The admin credentials (`admin / Muzaffarpur`) are verified client-side. If hosting on a public domain, ensure administrative surveillance is conducted through secure channels.
+1. **Admin Credentials**: The admin credentials (`secret`) are verified client-side. If hosting on a public domain, ensure administrative surveillance is conducted through secure channels.
 2. **Local Storage**: Contributor practice samples and surveillance logs are stored in the client's browser `localStorage`. When contributors complete their 10-digit sets, their personal CSV is automatically downloaded directly to their machine.
 3. **Master CSV**: The consolidated master CSV combines all local practices with the 200 authentic MNIST validation samples and can be exported exclusively by Vivek Bhushan via the Tab 6 Admin Vault.
