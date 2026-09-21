@@ -79,4 +79,4 @@ When adding features or modifying existing code, please adhere to these core des
 
 ## 📬 Questions & Support
 
-If you encounter any bugs or have feature requests, please open an Issue on GitHub. For administrative inquiries, contact **Vivek Bhushan** (`admin@aries.ai`).
+If you encounter any bugs or have feature requests, please open an Issue on GitHub. For administrative inquiries, contact **Vivek Bhushan** (`owner`).
