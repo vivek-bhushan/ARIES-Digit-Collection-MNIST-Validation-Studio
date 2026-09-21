@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARIES - Digit Collection & MNIST Validation Studio</title>
+  <meta name="description" content="ARIES: Interactive AI Digit Drawing, Collection Studio and 200-image Authentic MNIST Validation Benchmark Suite with Confusion Matrix and Multi-format Dataset Exporter.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="assets/aries-logo.png">
+</head>
+<body>
+  <!-- Dynamic Background Layers -->
+  <div class="app-bg-layer" id="app-bg-layer"></div>
+  <div class="app-bg-overlay" id="app-bg-overlay"></div>
+
+  <div class="app-wrapper">
+    
+    <!-- Top Brand Header -->
+    <header class="glass-panel header" id="app-header">
+      <div class="brand-section">
+        <div class="brand-logo" title="ARIES AI Lab">
+          <img src="assets/aries-logo.png" alt="ARIES Ram Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-text">
+          <h1>ARIES <span class="brand-badge">v1.0 • STUDIO</span></h1>
+          <p>Digit Collection &amp; Authentic MNIST Validation Benchmark Suite</p>
+        </div>
+      </div>
+
+      <div class="status-badges">
+        <div class="badge-item" title="Authentic MNIST Test Dataset Pre-Loaded">
+          <div class="badge-dot"></div>
+          <span>Validation MNIST: <strong id="val-badge-count">200 Images</strong></span>
+        </div>
+        <div class="badge-item">
+          <span>Model Accuracy: <strong id="val-badge-acc" style="color: var(--aries-emerald);">97.0%</strong></span>
+        </div>
+        <div class="badge-item" title="Custom Collected Digits">
+          <span><span id="custom-badge-prefix">Custom Collected:</span> <strong id="custom-badge-count">0 Samples</strong></span>
+        </div>
+        <!-- Dedicated Lock / Sign In Button -->
+        <button class="btn btn-secondary btn-sm" id="btn-lock-screen" style="border-color: rgba(255, 51, 102, 0.4); color: #ff758c; gap: 6px; font-weight: 600;" title="Lock Studio & Open Authentication Gate">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span id="btn-lock-label">Lock / Sign In</span>
+        </button>
+
+        <!-- User Profile & Sign Out -->
+        <div class="badge-item user-header-badge" id="user-header-badge" style="display: none;">
+          <span class="user-avatar-dot" id="user-avatar-dot"></span>
+          <span id="user-header-name">Admin</span>
+          <button class="btn btn-secondary btn-xs" id="btn-logout" title="Sign Out / Lock Application">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Background Artwork Switcher & Tone Bar -->
+    <div class="glass-panel bg-control-bar" id="bg-control-bar">
+      <div class="bg-control-left">
+        <div class="bg-control-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Artwork Backdrop:</span>
+        </div>
+
+        <div class="bg-nav-group">
+          <button class="btn btn-secondary btn-sm btn-icon" id="btn-bg-prev" title="Previous Background Artwork">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+
+          <div class="bg-current-indicator" id="bg-current-indicator" title="Active Background Artwork">
+            <span class="bg-num-pill" id="bg-num-pill">OFF</span>
+            <span class="bg-name-text" id="bg-name-text">Default Space (No Image)</span>
+          </div>
+
+          <button class="btn btn-secondary btn-sm btn-icon" id="btn-bg-next" title="Next Background Artwork">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-control-right">
+        <!-- Bright vs Dark Tone Option -->
+        <button class="btn btn-secondary btn-sm" id="btn-bg-mode" title="Toggle Bright / Dark Artwork Tone">
+          <span id="bg-mode-icon">🌙</span>
+          <span id="bg-mode-text">Dark Tone</span>
+        </button>
+
+        <!-- Reset Button -->
+        <button class="btn btn-secondary btn-sm bg-reset-btn" id="btn-bg-reset" title="Reset background to default situation without any background images">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+          Reset to Default
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist" aria-label="Aries Studio Navigation">
+      <button class="tab-btn active" id="tab-btn-studio" role="tab" aria-selected="true" aria-controls="tab-studio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        Studio &amp; Collector
+      </button>
+      <button class="tab-btn" id="tab-btn-val" role="tab" aria-selected="false" aria-controls="tab-val">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        MNIST Validation <span class="tab-badge">200</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-custom" role="tab" aria-selected="false" aria-controls="tab-custom">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>
+        Custom Collection <span class="tab-badge" id="tab-badge-custom-count">0</span>
+      </button>
+      <button class="tab-btn" id="tab-btn-train" role="tab" aria-selected="false" aria-controls="tab-train">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Model Training Studio
+      </button>
+      <button class="tab-btn" id="tab-btn-export" role="tab" aria-selected="false" aria-controls="tab-export">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Dataset Exporter
+      </button>
+      <button class="tab-btn admin-only-tab" id="tab-btn-admin-hub" role="tab" aria-selected="false" aria-controls="tab-admin-hub" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Admin Surveillance Hub <span class="tab-badge admin-hub-badge">Live</span>
+      </button>
+    </nav>
+
+    <!-- =========================================================================
+         TAB 1: STUDIO & COLLECTOR
+         ========================================================================= -->
+    <main class="tab-content active" id="tab-studio" role="tabpanel" aria-labelledby="tab-btn-studio">
+      <div class="studio-grid">
+        
+        <!-- Drawing Workspace -->
+        <section class="glass-panel studio-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              <span>Digit Canvas (280x280)</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);">Shortcuts: [Space] Add • [C] Clear</span>
+          </div>
+
+          <div class="canvas-wrapper">
+            <div class="canvas-frame" id="canvas-frame">
+              <canvas id="draw-canvas" width="280" height="280"></canvas>
+              <div class="canvas-grid-overlay"></div>
+              <!-- Floating Auto-Collect Countdown Pill -->
+              <div class="auto-collect-pill" id="auto-collect-pill" style="display: none;">
+                <span class="auto-collect-dot"></span>
+                <span id="auto-collect-pill-text">Auto-saving in 0.8s...</span>
+              </div>
+            </div>
+
+            <!-- Canvas Tool Controls -->
+            <div class="draw-controls">
+              <button class="btn btn-secondary btn-icon active" id="tool-brush" title="Draw Brush (B)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+              </button>
+              <button class="btn btn-secondary btn-icon" id="tool-eraser" title="Eraser (E)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16C2 15 2 13 3 12L13 2L22 11L20 20Z"/></svg>
+              </button>
+              <div class="slider-group" title="Brush Thickness">
+                <span>Size:</span>
+                <input type="range" id="brush-size" min="10" max="32" value="20">
+                <span id="brush-size-val" style="font-family: var(--font-mono); width: 20px;">20</span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-clear" title="Clear Canvas (C)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <!-- Automated Sequence Completion Tracker & Flashing Missing Digit Indicator -->
+          <div class="sequence-tracker-container" id="sequence-tracker-container">
+            <div class="sequence-tracker-header">
+              <div class="sequence-prompt-text" id="sequence-prompt-text">
+                <span class="pulsing-ping-dot" id="pulsing-ping-dot"></span>
+                <span class="badge" id="sequence-round-badge" style="background: rgba(0, 242, 254, 0.15); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.4); font-family: var(--font-mono); font-size: 11px; padding: 2px 8px; margin-right: 6px; font-weight: 700;">ROUND 1</span>
+                <span id="sequence-prompt-msg">Target: Digit <strong id="current-target-missing-digit" style="color: #ff3366; font-size: 15px;">0</strong> is missing! Draw digit <strong id="current-target-missing-digit-2" style="color: #ff3366;">0</strong> now.</span>
+              </div>
+              <div class="sequence-progress-pill" id="sequence-progress-pill">
+                <span>Completed: <strong id="sequence-progress-ratio">0/10</strong></span>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 6px;">
+              <div class="sequence-missing-subtext" id="sequence-missing-subtext" style="margin: 0;">
+                <span>Missing from your 0–9 set: <strong id="sequence-missing-numbers-list" style="color: #ff758c;">0, 1, 2, 3, 4, 5, 6, 7, 8, 9</strong></span>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-auto-collect-all-missing" style="background: rgba(0, 242, 254, 0.12); color: #00f2fe; border-color: rgba(0, 242, 254, 0.35); font-weight: 700; font-size: 11px; padding: 4px 12px; gap: 6px; cursor: pointer;" title="Automatically synthesize and collect all 0–9 missing digits without manual input">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>⚡ Auto-Collect All Digits (0 Manual Input)</span>
+              </button>
+            </div>
+
+            <!-- Congratulatory Celebration Card (Appears when all 10 digits are collected) -->
+            <div class="sequence-celebration-card" id="sequence-celebration-card" style="display: none;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 24px;">🎉</span>
+                <div>
+                  <div style="font-size: 13px; font-weight: 700; color: #00e676;" id="celebration-title">Round Complete! All 10 Digits (0–9) Collected!</div>
+                  <div style="font-size: 11px; color: var(--text-muted);" id="celebration-subtitle">CSV downloaded automatically. System is ready for the next round of inputs!</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="btn btn-primary btn-sm" id="btn-download-my-contribution-top" style="background: linear-gradient(135deg, #00e676, #00f2fe); color: #07090e; font-weight: 700; gap: 6px;" title="Download your 0-9 practice dataset as CSV">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Download CSV</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-start-next-round" style="background: rgba(0, 242, 254, 0.15); color: #00f2fe; border-color: rgba(0, 242, 254, 0.4); font-weight: 700; gap: 6px;" title="Immediately start the next round of 0-9 practice drawings">
+                  <span>⚡ Next Round →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Digit Selector & Auto Modes -->
+          <div class="digit-selector-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <label>Target Ground-Truth Label (Click or Draw Target):</label>
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <label class="auto-advance-toggle" title="Hands-free: automatically saves digit after you draw and advances to next missing digit">
+                  <input type="checkbox" id="chk-auto-collect" checked>
+                  <span style="color: var(--aries-emerald); font-weight: 600;">⚡ Auto-Collect &amp; Auto-Advance</span>
+                </label>
+              </div>
+            </div>
+            <div class="digit-buttons" id="digit-selector-buttons">
+              <button class="digit-btn missing-flash active" data-digit="0">0</button>
+              <button class="digit-btn" data-digit="1">1</button>
+              <button class="digit-btn" data-digit="2">2</button>
+              <button class="digit-btn" data-digit="3">3</button>
+              <button class="digit-btn" data-digit="4">4</button>
+              <button class="digit-btn" data-digit="5">5</button>
+              <button class="digit-btn" data-digit="6">6</button>
+              <button class="digit-btn" data-digit="7">7</button>
+              <button class="digit-btn" data-digit="8">8</button>
+              <button class="digit-btn" data-digit="9">9</button>
+            </div>
+          </div>
+
+          <!-- Save to Collection Button -->
+          <button class="btn btn-primary" id="btn-add-sample" style="width: 100%; height: 48px; font-size: 14px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span id="btn-add-sample-label">⚡ Auto-Collection Mode Active (or Click / Enter to Save Now)</span>
+          </button>
+        </section>
+
+        <!-- Live MNIST Normalization & Tensor Inspector -->
+        <section class="glass-panel studio-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+              <span>MNIST 28x28 Normalizer</span>
+            </div>
+            <span class="brand-badge" style="font-size: 9px;">LeCun Pipeline</span>
+          </div>
+
+          <div class="preview-container">
+            <div class="preview-canvas-box" title="Real-time Center of Mass 28x28 Tensor">
+              <canvas id="preview-canvas" width="28" height="28"></canvas>
+              <div class="com-crosshair" id="com-indicator" style="top: 50%; left: 50%;" title="Center of Mass (13.5, 13.5)"></div>
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); text-align: center;">
+              Aspect-scaled into 20x20 box &amp; translated to center of mass (13.5, 13.5).
+            </p>
+          </div>
+
+          <div class="tensor-stats">
+            <div class="stat-row">
+              <span>Tensor Shape:</span>
+              <span>[1, 28, 28] (784)</span>
+            </div>
+            <div class="stat-row">
+              <span>Active Pixels (>20):</span>
+              <span id="stat-active-pixels">0</span>
+            </div>
+            <div class="stat-row">
+              <span>Center of Mass (cx, cy):</span>
+              <span id="stat-com">(13.5, 13.5)</span>
+            </div>
+            <div class="stat-row">
+              <span>Mean Intensity:</span>
+              <span id="stat-mean-intensity">0.00 / 255</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Neural Network Classification -->
+        <section class="glass-panel studio-card prediction-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+              <span>Live AI Prediction</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);" id="pred-latency">0.2 ms</span>
+          </div>
+
+          <div class="hero-prediction">
+            <div class="hero-digit-wrap">
+              <div class="hero-digit" id="hero-pred-digit">-</div>
+              <div class="hero-confidence">
+                <div>AI Guess: <strong id="hero-pred-label">-</strong></div>
+                <div style="font-size: 12px;">Confidence: <strong id="hero-pred-conf">0.0%</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="probabilities-list" id="prob-bars-container">
+            <!-- 0 to 9 Probability Bars dynamically rendered -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- =========================================================================
+         TAB 2: MNIST VALIDATION DATASET (200 IMAGES)
+         ========================================================================= -->
+    <section class="tab-content" id="tab-val" role="tabpanel" aria-labelledby="tab-btn-val">
+      <div class="val-layout">
+        
+        <!-- Validation Benchmark Banner -->
+        <div class="benchmark-banner">
+          <div class="benchmark-info">
+            <h2>
+              <img src="assets/aries-logo.png" alt="Aries Emblem" class="banner-emblem-img">
+              200 Authentic MNIST Test Benchmark
+            </h2>
+            <p>Official Yann LeCun MNIST test dataset (20 balanced samples per class 0–9) for instant accuracy &amp; error validation.</p>
+          </div>
+
+          <div class="benchmark-stats-row">
+            <div class="big-stat">
+              <span class="big-stat-val accent-green" id="val-acc-stat">97.0%</span>
+              <span class="big-stat-label">Benchmark Accuracy</span>
+            </div>
+            <div class="big-stat">
+              <span class="big-stat-val accent-cyan" id="val-correct-stat">194 / 200</span>
+              <span class="big-stat-label">Correct Samples</span>
+            </div>
+            <div class="big-stat">
+              <span class="big-stat-val" id="val-speed-stat">0.3 ms</span>
+              <span class="big-stat-label">Avg Inference</span>
+            </div>
+            <button class="btn btn-cyan" id="btn-run-benchmark">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Live Benchmark
+            </button>
+          </div>
+        </div>
+
+        <!-- Confusion Matrix & Pixel Inspector Grid -->
+        <div class="val-grid-two-col">
+          
+          <!-- 10x10 Confusion Matrix -->
+          <div class="glass-panel studio-card">
+            <div class="card-title">
+              <div class="card-title-left">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+                <span>Interactive Confusion Matrix (10x10)</span>
+              </div>
+              <span style="font-size: 11px; color: var(--text-secondary);">Click any cell to filter samples</span>
+            </div>
+
+            <div class="cm-container">
+              <table class="cm-table" id="cm-table">
+                <!-- Dynamically filled with Actual (Rows) vs Predicted (Cols) -->
+              </table>
+            </div>
+
+            <div style="display: flex; gap: 16px; font-size: 11px; color: var(--text-secondary);">
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: rgba(0,230,118,0.4); border-radius: 2px;"></span> True Positives (Correct)</span>
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; background: rgba(255,51,102,0.4); border-radius: 2px;"></span> False Classifications (Errors)</span>
+            </div>
+          </div>
+
+          <!-- Selected Sample Pixel Intensity Matrix Inspector -->
+          <div class="glass-panel studio-card inspector-card">
+            <div class="card-title">
+              <div class="card-title-left">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                <span>28x28 Pixel Intensity Inspector</span>
+              </div>
+              <span id="inspect-sample-id" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-code);">mnist_val_001</span>
+            </div>
+
+            <div class="inspector-body">
+              <div class="pixel-grid-container" id="pixel-grid-inspector" title="Hover over pixels to inspect intensity 0..255">
+                <!-- 28x28 = 784 individual pixel cells rendered -->
+              </div>
+
+              <div class="inspector-details">
+                <div class="tensor-stats">
+                  <div class="stat-row"><span>Ground Truth Label:</span><span id="inspect-label" style="font-size: 16px; color: #fff;">0</span></div>
+                  <div class="stat-row"><span>Model Prediction:</span><span id="inspect-pred" style="font-size: 16px; color: var(--aries-emerald);">0</span></div>
+                  <div class="stat-row"><span>Confidence:</span><span id="inspect-conf">99.8%</span></div>
+                  <div class="stat-row"><span>MNIST Original Index:</span><span id="inspect-mnist-idx">#10</span></div>
+                  <div class="stat-row"><span>Mean Intensity:</span><span id="inspect-mean-int">32.4</span></div>
+                </div>
+                <div style="background: var(--bg-surface-2); padding: 10px; border-radius: 8px; font-size: 12px;">
+                  <span style="color: var(--text-secondary);">Pixel Hover: </span>
+                  <strong id="hover-pixel-info" style="font-family: var(--font-mono); color: var(--aries-cyan);">X: --, Y: -- | Val: --</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 200 Samples Gallery with Filter Controls -->
+        <div class="glass-panel studio-card">
+          <div class="gallery-controls">
+            <div class="card-title-left">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+              <span style="font-size: 16px; font-weight: 700;">Validation Samples Gallery (200 Images)</span>
+            </div>
+
+            <div class="filter-pills" id="val-filter-pills">
+              <button class="pill-btn active" data-val-filter="all">All (200)</button>
+              <button class="pill-btn" data-val-filter="0">0 (20)</button>
+              <button class="pill-btn" data-val-filter="1">1 (20)</button>
+              <button class="pill-btn" data-val-filter="2">2 (20)</button>
+              <button class="pill-btn" data-val-filter="3">3 (20)</button>
+              <button class="pill-btn" data-val-filter="4">4 (20)</button>
+              <button class="pill-btn" data-val-filter="5">5 (20)</button>
+              <button class="pill-btn" data-val-filter="6">6 (20)</button>
+              <button class="pill-btn" data-val-filter="7">7 (20)</button>
+              <button class="pill-btn" data-val-filter="8">8 (20)</button>
+              <button class="pill-btn" data-val-filter="9">9 (20)</button>
+              <button class="pill-btn" data-val-filter="misclassified" style="border-color: var(--aries-red); color: #ff85a2;">Misclassified (<span id="misclass-pill-count">6</span>)</button>
+            </div>
+          </div>
+
+          <div class="mnist-gallery-grid" id="val-gallery-grid">
+            <!-- 200 canvas thumbnails rendered -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         TAB 3: CUSTOM COLLECTION & AUGMENTATION
+         ========================================================================= -->
+    <section class="tab-content" id="tab-custom" role="tabpanel" aria-labelledby="tab-btn-custom">
+      <div class="val-layout">
+        
+        <!-- Custom Collection Summary & Class Balance -->
+        <div class="glass-panel studio-card">
+          <div class="custom-header-row">
+            <div>
+              <h2 style="font-family: var(--font-display); font-size: 20px;" id="custom-collection-title">Custom Drawn Digits Collection</h2>
+              <p style="color: var(--text-secondary); font-size: 13px;" id="custom-collection-desc">Manage collected samples, inspect class balance, and generate synthetic augmentations.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-secondary btn-sm" id="btn-augment-all" title="Generate rotation, shift, and noise variations">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                Augment Dataset (3x)
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-clear-custom" style="color: #ff85a2;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                Clear All
+              </button>
+            </div>
+          </div>
+
+          <!-- Class Distribution Chart -->
+          <div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px;">
+              CLASS DISTRIBUTION (0–9 BALANCE)
+            </div>
+            <div class="class-dist-chart" id="custom-dist-chart">
+              <!-- Dynamically populated 10 vertical bars -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Samples Grid -->
+        <div class="glass-panel studio-card">
+          <div class="card-title">
+            <span>Collected Samples Gallery (<span id="custom-gallery-count">0</span>)</span>
+          </div>
+
+          <div class="mnist-gallery-grid" id="custom-gallery-grid" style="min-height: 200px;">
+            <!-- Populated with custom samples -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         TAB 4: MODEL TRAINING STUDIO (In-Browser Backprop & Fine-Tuning)
+         ========================================================================= -->
+    <section class="tab-content" id="tab-train" role="tabpanel" aria-labelledby="tab-btn-train">
+      <div class="train-grid">
+        
+        <!-- Left Column: Training Configuration Card -->
+        <div class="glass-panel studio-card train-config-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Neural Training Studio</span>
+            </div>
+            <span class="model-status-chip" id="active-model-badge">Baseline Weights Active</span>
+          </div>
+
+          <!-- Architecture & Status Summary -->
+          <div class="train-hero-status">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: #fff;">Architecture: Deep MLP</div>
+              <div style="font-family: var(--font-mono); font-size: 11px; color: var(--aries-cyan);">784 [Input] → 128 [ReLU] → 64 [ReLU] → 10 [Softmax]</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 11px; color: var(--text-muted);">Optimizer</div>
+              <div style="font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: var(--aries-emerald);">Adam (Cross-Entropy)</div>
+            </div>
+          </div>
+
+          <!-- Training Mode Selection -->
+          <div class="train-field-group">
+            <label>TRAINING MODE</label>
+            <div class="train-radio-grid">
+              <div class="train-radio-btn active" id="mode-btn-finetune" data-mode="finetune">
+                <h5>⚡ Fine-Tune Pretrained</h5>
+                <p>Transfer learns from baseline weights. Adapts to human handwriting styles rapidly without losing MNIST knowledge.</p>
+              </div>
+              <div class="train-radio-btn" id="mode-btn-scratch" data-mode="scratch">
+                <h5>🌱 Train from Scratch</h5>
+                <p>Initializes fresh weights with He-Normal distribution to train from 0% accuracy.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Training Data Source -->
+          <div class="train-field-group">
+            <label for="train-data-source">DATASET SOURCE</label>
+            <select class="train-select" id="train-data-source">
+              <option value="combined">Combined (Custom Drawn Digits + 200 MNIST Validation) [Recommended]</option>
+              <option value="custom">Custom Drawn Digits Only</option>
+              <option value="mnist">200 MNIST Validation Dataset Only</option>
+            </select>
+          </div>
+
+          <!-- Hyperparameters Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="train-field-group">
+              <label for="train-epochs">EPOCHS: <span id="val-epochs-display" style="color: var(--aries-cyan); font-family: var(--font-mono);">10</span></label>
+              <select class="train-select" id="train-epochs">
+                <option value="5">5 Epochs (Quick Test)</option>
+                <option value="10" selected>10 Epochs (Balanced)</option>
+                <option value="20">20 Epochs (Deep Fit)</option>
+                <option value="30">30 Epochs (Maximum)</option>
+              </select>
+            </div>
+
+            <div class="train-field-group">
+              <label for="train-lr">LEARNING RATE</label>
+              <select class="train-select" id="train-lr">
+                <option value="0.002">0.002 (Cautious)</option>
+                <option value="0.005" selected>0.005 (Recommended)</option>
+                <option value="0.01">0.01 (Aggressive)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="train-field-group">
+              <label for="train-batch-size">BATCH SIZE</label>
+              <select class="train-select" id="train-batch-size">
+                <option value="16">16 Samples</option>
+                <option value="32" selected>32 Samples</option>
+                <option value="64">64 Samples</option>
+              </select>
+            </div>
+
+            <div class="train-field-group">
+              <label>AUGMENTATION</label>
+              <div style="display: flex; align-items: center; gap: 8px; height: 38px;">
+                <input type="checkbox" id="train-aug-chk" checked style="accent-color: var(--aries-cyan); width: 16px; height: 16px; cursor: pointer;">
+                <label for="train-aug-chk" style="font-size: 12px; cursor: pointer; color: var(--text-primary); margin: 0;">Online Shift Jitter</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Training Action Buttons -->
+          <div class="train-actions-col">
+            <button class="btn-train-launch" id="btn-start-training">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Train Model in Browser</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-stop-training" style="display: none; color: var(--aries-red); border-color: rgba(255, 51, 102, 0.4);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+              <span>Stop Training</span>
+            </button>
+          </div>
+
+          <!-- Weights Management -->
+          <div style="padding-top: 8px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" id="btn-deploy-trained-weights" style="flex: 1; color: var(--aries-cyan);" disabled title="Apply these trained weights to the active studio canvas">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Deploy to Studio
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-download-trained-weights" style="flex: 1;" disabled title="Download model weights as JSON">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export JSON
+              </button>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-reset-baseline-weights" style="color: var(--text-muted);" title="Revert to original pre-trained baseline">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>
+              Reset to Factory MNIST Baseline
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Telemetry, Real-time Charts & Neural Terminal -->
+        <div class="glass-panel studio-card" style="display: flex; flex-direction: column;">
+          
+          <!-- Telemetry Stats Row -->
+          <div class="train-telemetry-row">
+            <div class="telemetry-card">
+              <div class="telemetry-label">EPOCH</div>
+              <div class="telemetry-value" id="train-stat-epoch">0 / 10</div>
+              <div class="telemetry-sub" id="train-stat-time">Idle</div>
+            </div>
+            <div class="telemetry-card">
+              <div class="telemetry-label">LOSS</div>
+              <div class="telemetry-value" id="train-stat-loss" style="color: var(--aries-amber);">--</div>
+              <div class="telemetry-sub" id="train-stat-loss-delta">Cross-Entropy</div>
+            </div>
+            <div class="telemetry-card">
+              <div class="telemetry-label">TRAIN ACCURACY</div>
+              <div class="telemetry-value" id="train-stat-acc" style="color: var(--aries-emerald);">--%</div>
+              <div class="telemetry-sub" id="train-stat-acc-gain">Target: &gt;90%</div>
+            </div>
+            <div class="telemetry-card">
+              <div class="telemetry-label">VAL ACCURACY</div>
+              <div class="telemetry-value" id="train-stat-val-acc" style="color: var(--aries-cyan);">--%</div>
+              <div class="telemetry-sub">Generalization</div>
+            </div>
+          </div>
+
+          <!-- Dual Curve Real-Time Canvas -->
+          <div class="curves-container">
+            <div class="curves-header">
+              <span style="font-family: var(--font-display); font-size: 13px; font-weight: 700; color: #fff;">LIVE TRAINING DYNAMICS</span>
+              <div class="curves-legend">
+                <div class="legend-item">
+                  <div class="legend-color" style="background: #ffab00;"></div>
+                  <span>Loss Curve</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background: #00e676;"></div>
+                  <span>Train Acc %</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background: #00f2fe;"></div>
+                  <span>Val Acc %</span>
+                </div>
+              </div>
+            </div>
+            <canvas id="training-chart-canvas" width="600" height="200"></canvas>
+          </div>
+
+          <!-- Real-Time Neural Terminal Log -->
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.05em;">
+              NEURAL TRAINING STREAM
+            </div>
+            <div class="neural-term-box" id="neural-term-box">
+              <div class="term-line">ARIES Deep Learning Engine Ready. Select training mode and click "Train Model in Browser" to start.</div>
+            </div>
+          </div>
+
+          <!-- Interactive Quick-Test Mini-Canvas -->
+          <div class="quick-test-section">
+            <div class="quick-test-canvas-wrap">
+              <canvas id="quick-test-canvas" width="140" height="140"></canvas>
+            </div>
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <div style="font-weight: 700; font-size: 13px; color: #fff;">Interactive Quick-Test Canvas</div>
+                <button class="btn btn-secondary btn-sm" id="btn-clear-quick-test" style="padding: 2px 8px; font-size: 11px;">Clear</button>
+              </div>
+              <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                Draw any digit above to test the model's live recognition in real time.
+              </p>
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="display: flex; align-items: baseline; gap: 6px;">
+                  <span style="font-size: 11px; color: var(--text-muted);">PREDICTION:</span>
+                  <span style="font-family: var(--font-display); font-size: 24px; font-weight: 900; color: var(--aries-cyan);" id="quick-test-pred-digit">-</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 6px;">
+                  <span style="font-size: 11px; color: var(--text-muted);">CONFIDENCE:</span>
+                  <span style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--aries-emerald);" id="quick-test-pred-conf">--%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         TAB 5: EXPORT & INTEGRATION HUB
+         ========================================================================= -->
+    <section class="tab-content" id="tab-export" role="tabpanel" aria-labelledby="tab-btn-export">
+      <div class="export-grid">
+        
+        <!-- Download Formats Card -->
+        <div class="glass-panel export-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              <span>Download Dataset Packages</span>
+            </div>
+          </div>
+
+          <div style="font-size: 13px; color: var(--text-secondary);">
+            Export options support standard ML formats (Kaggle/MNIST CSV, JSON tensors, and hierarchical PNG folder archives).
+          </div>
+
+          <!-- Source Selection -->
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Select Export Source:</label>
+            <select id="export-source-select" style="padding: 10px; background: var(--bg-surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: #fff; font-family: var(--font-sans);">
+              <option value="all">Combined (200 MNIST Validation + Custom Collection)</option>
+              <option value="validation">200 Authentic MNIST Validation Dataset Only</option>
+              <option value="custom">Custom Drawn Digits Only</option>
+            </select>
+          </div>
+
+          <!-- CSV Export -->
+          <div class="export-option-box">
+            <div class="export-desc">
+              <h4>Standard MNIST CSV (.csv)</h4>
+              <p>Header: <code>label,pixel0,pixel1,...,pixel783</code>. Ready for PyTorch / Pandas / Scikit-Learn.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="btn-export-csv">Download CSV</button>
+          </div>
+
+          <!-- JSON Export -->
+          <div class="export-option-box">
+            <div class="export-desc">
+              <h4>Structured JSON (.json)</h4>
+              <p>Full metadata, timestamps, intensity metrics, and pixel arrays.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-export-json">Download JSON</button>
+          </div>
+
+          <!-- PNG ZIP Archive -->
+          <div class="export-option-box">
+            <div class="export-desc">
+              <h4>Image Folder Archive (.zip)</h4>
+              <p>Organized in folders <code>0/</code> to <code>9/</code> with individual 28x28 PNGs &amp; PyTorch script.</p>
+            </div>
+            <button class="btn btn-cyan btn-sm" id="btn-export-zip">Download ZIP</button>
+          </div>
+
+          <!-- GitHub Markdown Documentation Bundle (.zip & .md) -->
+          <div class="export-option-box" style="border: 1px solid rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.04);">
+            <div class="export-desc">
+              <h4 style="color: var(--aries-cyan);">GitHub Documentation Bundle (.zip &amp; .md)</h4>
+              <p>Download README.md, CONTRIBUTING.md, DEPLOYMENT.md, and LICENSE.md ready for GitHub.</p>
+              <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+                <a href="README.md" download="README.md" class="badge badge-cyan" style="text-decoration: none; padding: 3px 8px; font-size: 11px;">📄 README.md</a>
+                <a href="CONTRIBUTING.md" download="CONTRIBUTING.md" class="badge" style="text-decoration: none; padding: 3px 8px; font-size: 11px; background: rgba(255,255,255,0.08); color: #fff;">📄 CONTRIBUTING.md</a>
+                <a href="DEPLOYMENT.md" download="DEPLOYMENT.md" class="badge" style="text-decoration: none; padding: 3px 8px; font-size: 11px; background: rgba(255,255,255,0.08); color: #fff;">📄 DEPLOYMENT.md</a>
+                <a href="LICENSE.md" download="LICENSE.md" class="badge badge-emerald" style="text-decoration: none; padding: 3px 8px; font-size: 11px;">⚖️ LICENSE.md</a>
+              </div>
+            </div>
+            <a href="ARIES_GitHub_Documentation_MD.zip" download="ARIES_GitHub_Documentation_MD.zip" class="btn btn-primary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download Docs ZIP</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PyTorch Starter Code Card -->
+        <div class="glass-panel export-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+              <span>PyTorch Training Script</span>
+            </div>
+            <button class="btn btn-secondary btn-sm copy-code-btn" id="btn-copy-code">Copy Python</button>
+          </div>
+
+          <p style="font-size: 13px; color: var(--text-secondary);">
+            Run this code in Python to load your exported CSV and train a Convolutional Neural Network:
+          </p>
+
+          <pre class="code-snippet-box" id="pytorch-code-snippet">
+import pandas as pd
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader
+
+class AriesDigitDataset(Dataset):
+    def __init__(self, csv_file):
+        df = pd.read_csv(csv_file)
+        self.labels = df['label'].values
+        self.images = df.iloc[:, 1:].values.reshape(-1, 1, 28, 28).astype('float32') / 255.0
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.images[idx]), torch.tensor(self.labels[idx], dtype=torch.long)
+
+# CNN Classifier
+class AriesCNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(1, 32, 3, padding=1), nn.BatchNorm2d(32), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(32, 64, 3, padding=1), nn.BatchNorm2d(64), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Flatten(),
+            nn.Linear(64 * 7 * 7, 128), nn.ReLU(),
+            nn.Linear(128, 10)
+        )
+    def forward(self, x): return self.net(x)
+
+print("Ready to train on ARIES dataset!")
+          </pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         TAB 6: ADMIN SURVEILLANCE & ACTIVITY HUB ("Who has done what & what's been going on")
+         ========================================================================= -->
+    <section class="tab-content" id="tab-admin-hub" role="tabpanel" aria-labelledby="tab-btn-admin-hub">
+      <div class="admin-hub-grid">
+        
+        <!-- Admin Command Banner -->
+        <div class="admin-banner">
+          <div class="admin-banner-left">
+            <h2>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Admin Command &amp; Surveillance Console
+            </h2>
+            <p>Live operational intelligence: real-time contributor tracking, 0–9 digit collection matrix, and multi-user audit surveillance.</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="text-align: right;">
+              <div style="font-size: 11px; color: var(--text-muted);">REVIEWER IDENTITY</div>
+              <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: #ffc107;" id="admin-hub-reviewer-name">admin [Vivek Bhushan]</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-admin-hub" title="Refresh surveillance telemetry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Refresh Feed
+            </button>
+          </div>
+        </div>
+
+        <!-- Top Surveillance Metric Cards -->
+        <div class="train-telemetry-row">
+          <div class="telemetry-card">
+            <div class="telemetry-label">AUDIT EVENTS LOGGED</div>
+            <div class="telemetry-value" id="admin-stat-events" style="color: var(--aries-cyan);">0</div>
+            <div class="telemetry-sub">Chronological Trail</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">DISTINCT CONTRIBUTORS</div>
+            <div class="telemetry-value" id="admin-stat-users" style="color: #ffc107;">0</div>
+            <div class="telemetry-sub">Learners &amp; Reviewers</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">DIGITS COLLECTED</div>
+            <div class="telemetry-value" id="admin-stat-samples" style="color: var(--aries-emerald);">0</div>
+            <div class="telemetry-sub" id="admin-stat-approved-ratio">0 Approved</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="telemetry-label">TRAINING SESSIONS</div>
+            <div class="telemetry-value" id="admin-stat-trainings" style="color: #c084fc;">0</div>
+            <div class="telemetry-sub">Client-Side Backprop</div>
+          </div>
+        </div>
+
+        <!-- Section 0A: User Login Credentials Vault (Admin Eyes Only) -->
+        <div class="glass-panel studio-card" id="admin-user-vault-card" style="border-color: rgba(0, 242, 254, 0.3); box-shadow: 0 0 25px rgba(0, 242, 254, 0.08);">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              <span>User Login Credentials &amp; Access Vault · Emails with Passwords</span>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="auth-hint-pill" style="color: #00f2fe; border-color: rgba(0, 242, 254, 0.4); background: rgba(0, 242, 254, 0.1);">CONFIDENTIAL · ADMIN [VIVEK BHUSHAN]</span>
+              <button class="btn btn-secondary btn-sm" id="btn-export-vault-csv" title="Download User Credential Log as CSV">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Vault CSV
+              </button>
+            </div>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+            Secure record of all contributors who have logged in to practice digit drawing, with their login emails, passwords set, practice counts, and sequence completion status.
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="val-table" id="admin-vault-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>USER / EMAIL</th>
+                  <th>PASSWORD (STORED)</th>
+                  <th>AUTH METHOD</th>
+                  <th>LAST LOGIN</th>
+                  <th>LOGINS</th>
+                  <th>PRACTICE DIGITS</th>
+                  <th>0–9 COMPLETENESS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-vault-tbody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 0B: Master Dataset CSV Repository (All Practices & Users - Admin Eyes Only) -->
+        <div class="glass-panel studio-card" id="admin-master-csv-card" style="border-color: rgba(255, 193, 7, 0.35); box-shadow: 0 0 25px rgba(255, 193, 7, 0.1);">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+              <span>Master Dataset CSV Repository · All Practices &amp; Contributors</span>
+            </div>
+            <span class="auth-hint-pill" style="color: #ffc107; border-color: rgba(255, 193, 7, 0.4); background: rgba(255, 193, 7, 0.1);">VIVEK BHUSHAN EXCLUSIVE</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; padding: 10px 0;">
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: #ffffff;">Master Multi-User Training Dataset CSV</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;" id="admin-master-csv-desc">
+                Contains complete raw tensors (784 pixel arrays), ground-truth labels, metadata, timestamps, and contributor attributions across all practice sessions.
+              </div>
+            </div>
+            <button class="btn btn-primary" id="btn-download-master-csv" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #000; font-weight: 700; height: 44px; padding: 0 22px; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download Master CSV (All Practices)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 1: Who Has Done What (Contributor Intelligence Matrix - HDCA Inspiration) -->
+        <div class="glass-panel studio-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <span>Who Has Done What · Contributor Intelligence Matrix</span>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">0–9 sequence tracking &amp; contribution breakdown</span>
+          </div>
+
+          <div class="contributors-grid" id="admin-contributors-grid">
+            <!-- Populated dynamically with contributor cards & 0-9 matrices -->
+          </div>
+        </div>
+
+        <!-- Section 2: Submissions Review & HDCA 3-Stage Preprocessing Pipeline -->
+        <div class="glass-panel studio-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <span>Submissions Review &amp; 3-Stage Pipeline Inspection</span>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">Approve, reject, and inspect raw-to-MNIST transformation</span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="val-table" id="admin-submissions-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>THUMB</th>
+                  <th>DIGIT</th>
+                  <th>CONTRIBUTOR</th>
+                  <th>TIMESTAMP</th>
+                  <th>COLLECTION METHOD</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-submissions-tbody">
+                <!-- Populated dynamically with sample rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 3: What's Been Going On (Chronological Live Surveillance Stream) -->
+        <div class="glass-panel studio-card">
+          <div class="card-title">
+            <div class="card-title-left">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+              <span>What's Been Going On · Chronological Live Audit Stream</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" id="btn-export-audit-log" title="Export entire audit trail as JSON">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Audit JSON
+              </button>
+              <button class="btn btn-secondary btn-sm" id="btn-clear-audit-logs" style="color: #ff85a2;" title="Clear logged events">
+                Clear Logs
+              </button>
+            </div>
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="audit-controls-bar">
+            <div class="audit-filter-btns" id="audit-filter-btns">
+              <button class="audit-filter-btn active" data-filter="all">All Events</button>
+              <button class="audit-filter-btn" data-filter="collect">✍️ Digits Collected</button>
+              <button class="audit-filter-btn" data-filter="train">🧠 Model Training</button>
+              <button class="audit-filter-btn" data-filter="admin">🛡️ Admin Reviews</button>
+              <button class="audit-filter-btn" data-filter="auth">🔑 Logins &amp; Access</button>
+            </div>
+            <input type="text" class="train-input" id="audit-search-input" placeholder="Filter by user or action..." style="max-width: 250px; padding: 6px 12px; font-size: 12px;">
+          </div>
+
+          <!-- Audit Stream List -->
+          <div class="audit-stream-list" id="admin-audit-stream-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- HDCA 3-Stage Preprocessing Inspection Modal -->
+  <div class="hdca-modal-overlay" id="hdca-inspect-modal" style="display: none;">
+    <div class="hdca-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-family: var(--font-display); font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          HDCA Multi-Stage Preprocessing Inspector
+        </h3>
+        <button class="btn btn-secondary btn-sm" id="btn-close-hdca-modal" style="padding: 4px 10px;">✕ Close</button>
+      </div>
+
+      <div style="margin-top: 8px; font-size: 13px; color: var(--text-secondary);" id="hdca-modal-meta">
+        Sample Metadata &amp; Contributor Info
+      </div>
+
+      <div class="hdca-stages-row">
+        <!-- Stage 1: Raw Canvas Drawing -->
+        <div class="hdca-stage-box">
+          <div class="hdca-stage-title">STAGE 1: RAW INK (280×280)</div>
+          <canvas class="hdca-stage-canvas" id="hdca-stage-raw" width="280" height="280"></canvas>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Unprocessed human strokes</div>
+        </div>
+
+        <!-- Stage 2: Bounding Box Crop -->
+        <div class="hdca-stage-box">
+          <div class="hdca-stage-title">STAGE 2: CROPPED TO INK</div>
+          <canvas class="hdca-stage-canvas" id="hdca-stage-crop" width="140" height="140"></canvas>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Empty margins cropped out</div>
+        </div>
+
+        <!-- Stage 3: 28x28 Center-of-Mass Normalized Array -->
+        <div class="hdca-stage-box">
+          <div class="hdca-stage-title">STAGE 3: 28×28 CENTER-OF-MASS</div>
+          <canvas class="hdca-stage-canvas" id="hdca-stage-final" width="28" height="28"></canvas>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">MNIST-aligned 20×20 box in 28×28</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+        <div id="hdca-modal-status-badge">
+          <!-- Status pill -->
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-secondary btn-sm" id="btn-hdca-reject" style="color: var(--aries-red); border-color: rgba(255, 51, 102, 0.4);">
+            ❌ Reject Sample
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-hdca-approve" style="background: linear-gradient(135deg, #00e676, #00f2fe);">
+            ✅ Approve Sample
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Load Modules in Order -->
+  <script src="js/mnist_data.js"></script>
+  <script src="js/model_weights.js"></script>
+  <script src="js/canvas_processor.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/dataset_manager.js"></script>
+  <script src="js/exporter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

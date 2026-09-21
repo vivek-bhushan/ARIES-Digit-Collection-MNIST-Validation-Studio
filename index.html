@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARIES Studio — Sign In</title>
+  <meta name="description" content="Sign in to ARIES Digit Collection & Authentic MNIST Validation Studio. Access Google/Gmail user session or Vivek Bhushan Admin Console.">
+  <link rel="icon" type="image/png" href="assets/aries-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Dedicated Standalone Login Page Layout & Aesthetics */
+    body.login-page-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #07090e;
+      font-family: var(--font-sans, 'Inter', -apple-system, sans-serif);
+      color: #e2e8f0;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Background Mesh & Glows */
+    .login-bg-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 242, 254, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(255, 51, 102, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(157, 78, 221, 0.1) 0%, transparent 60%),
+        radial-gradient(circle at 50% 10%, rgba(0, 230, 118, 0.08) 0%, transparent 40%);
+    }
+
+    .login-bg-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Login Shell */
+    .login-shell {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 470px;
+      padding: 24px 20px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    /* Card */
+    .login-box {
+      width: 100%;
+      background: rgba(15, 20, 32, 0.82);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 
+        0 24px 70px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(0, 242, 254, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      padding: 38px 34px 30px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-box:hover {
+      border-color: rgba(0, 242, 254, 0.25);
+      box-shadow: 
+        0 28px 80px rgba(0, 0, 0, 0.8),
+        0 0 50px rgba(0, 242, 254, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Logo & Header */
+    .login-box-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .login-box-logo {
+      width: 108px;
+      height: 95px;
+      margin: 0 auto 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      border: 1.5px solid rgba(255, 80, 105, 0.45);
+      box-shadow: 
+        0 0 25px rgba(255, 51, 102, 0.35),
+        0 6px 18px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #140509;
+      animation: ariesPulseGlow 4s infinite alternate ease-in-out;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .login-box-logo:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 
+        0 0 38px rgba(255, 51, 102, 0.52),
+        0 10px 24px rgba(0, 0, 0, 0.65),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    }
+
+    .login-box-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      border-radius: inherit;
+    }
+
+    @keyframes ariesPulseGlow {
+      0% { 
+        box-shadow: 0 0 20px rgba(255, 51, 102, 0.28), 0 6px 18px rgba(0, 0, 0, 0.55); 
+        border-color: rgba(255, 80, 105, 0.4);
+      }
+      100% { 
+        box-shadow: 0 0 35px rgba(255, 51, 102, 0.5), 0 8px 22px rgba(0, 0, 0, 0.65); 
+        border-color: rgba(255, 115, 140, 0.65);
+      }
+    }
+
+    .login-box-title {
+      font-family: var(--font-display, 'Space Grotesk', sans-serif);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 6px;
+    }
+
+    .login-box-sub {
+      font-size: 12px;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+      margin: 0 0 14px;
+    }
+
+    .login-auth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.22);
+      font-size: 11px;
+      font-weight: 600;
+      color: #38bdf8;
+      letter-spacing: 0.3px;
+    }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 22px;
+      gap: 4px;
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .auth-tab-btn.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-tab-btn.active#tab-btn-google {
+      background: rgba(66, 133, 244, 0.18);
+      color: #ffffff;
+      border: 1px solid rgba(66, 133, 244, 0.35);
+    }
+
+    .auth-tab-btn.active#tab-btn-admin {
+      background: rgba(255, 51, 102, 0.18);
+      color: #ffffff;
+      border: 1px solid rgba(255, 51, 102, 0.35);
+    }
+
+    /* Panels */
+    .auth-panel {
+      display: none;
+      animation: ariesFadeIn 0.25s ease forwards;
+    }
+
+    .auth-panel.active {
+      display: block;
+    }
+
+    @keyframes ariesFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Form Fields */
+    .auth-field {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .auth-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 7px;
+      letter-spacing: 0.2px;
+    }
+
+    .auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-input-wrap svg {
+      position: absolute;
+      left: 14px;
+      color: #64748b;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    .auth-input-wrap input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 42px 12px 42px;
+      background: rgba(8, 12, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .auth-input-wrap input:focus {
+      background: rgba(12, 17, 29, 0.9);
+      border-color: #00f2fe;
+      box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.18);
+    }
+
+    .auth-input-wrap input:focus + svg,
+    .auth-input-wrap input:focus ~ svg {
+      color: #00f2fe;
+    }
+
+    .btn-toggle-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .auth-field-note {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 6px;
+      line-height: 1.4;
+      display: block;
+    }
+
+    /* Buttons */
+    .btn-auth-primary {
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-google-action {
+      background: #1a73e8;
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(26, 115, 232, 0.35);
+    }
+
+    .btn-google-action:hover {
+      background: #1557b0;
+      box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-admin-action {
+      background: linear-gradient(135deg, #ff3366, #ff758c);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(255, 51, 102, 0.35);
+    }
+
+    .btn-admin-action:hover {
+      background: linear-gradient(135deg, #ff1a53, #ff5c77);
+      box-shadow: 0 6px 25px rgba(255, 51, 102, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 18px 0;
+      color: #64748b;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-divider span {
+      padding: 0 10px;
+    }
+
+    .btn-demo-quick {
+      width: 100%;
+      padding: 11px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-demo-quick:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    /* Row between */
+    .auth-row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin: 12px 0 16px;
+    }
+
+    .auth-remember-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .auth-hint-pill {
+      font-family: var(--font-mono, 'Fira Code', monospace);
+      font-size: 11px;
+      color: #f43f5e;
+      background: rgba(244, 63, 94, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(244, 63, 94, 0.2);
+    }
+
+    /* Active Session Banner */
+    .active-session-card {
+      background: rgba(0, 230, 118, 0.08);
+      border: 1px solid rgba(0, 230, 118, 0.25);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .active-session-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .active-session-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00e676;
+      box-shadow: 0 0 10px #00e676;
+    }
+
+    .btn-continue-studio {
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #00e676, #00f2fe);
+      border: none;
+      border-radius: 8px;
+      color: #07090e;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-continue-studio:hover {
+      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+      transform: translateY(-1px);
+    }
+
+    /* Alert */
+    .login-alert-box {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      margin-bottom: 16px;
+      display: none;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .login-alert-box.error {
+      display: block;
+      background: rgba(255, 51, 102, 0.12);
+      border: 1px solid rgba(255, 51, 102, 0.4);
+      color: #ff758c;
+    }
+
+    .login-alert-box.success {
+      display: block;
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.4);
+      color: #4ade80;
+    }
+
+    /* Shake animation */
+    .shake {
+      animation: shakeAnim 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shakeAnim {
+      10%, 90% { transform: translate3d(-2px, 0, 0); }
+      20%, 80% { transform: translate3d(4px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* Footer */
+    .login-shell-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .login-shell-footer a {
+      color: #94a3b8;
+      text-decoration: none;
+      margin: 0 8px;
+      transition: color 0.2s ease;
+    }
+
+    .login-shell-footer a:hover {
+      color: #00f2fe;
+    }
+  </style>
+</head>
+<body class="login-page-body">
+  <!-- Dynamic Ambient Mesh Layers -->
+  <div class="login-bg-mesh"></div>
+  <div class="login-bg-grid"></div>
+
+  <div class="login-shell">
+    <div class="login-box" id="login-box-card">
+      
+      <!-- Brand & Header -->
+      <div class="login-box-header">
+        <div class="login-box-logo" title="ARIES AI Research Studio">
+          <img src="assets/aries-logo.png" alt="ARIES Ram Logo">
+        </div>
+        <h1 class="login-box-title">ARIES STUDIO</h1>
+        <p class="login-box-sub">Digit Collection &amp; MNIST Validation Benchmark Suite</p>
+        <div class="login-auth-pill">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Identity Verification Gateway</span>
+        </div>
+      </div>
+
+      <!-- Active Session Card (if previously logged in) -->
+      <div class="active-session-card" id="active-session-card" style="display: none;">
+        <div class="active-session-info">
+          <div class="active-session-dot"></div>
+          <div>
+            <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Active Session Found</div>
+            <div style="font-size: 14px; font-weight: 600; color: #ffffff;" id="active-session-user">Vivek Bhushan</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-continue-studio" id="btn-continue-studio" type="button">
+            <span>Continue to Studio</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button class="btn-demo-quick" id="btn-switch-account" type="button" style="width: auto; padding: 0 12px;" title="Sign In with Different Credentials">
+            Switch
+          </button>
+        </div>
+      </div>
+
+      <!-- Auth Method Tabs -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab-btn active" id="tab-btn-google" type="button">
+          <!-- Google Multi-Color G Logo -->
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Google / Gmail</span>
+        </button>
+        <button class="auth-tab-btn" id="tab-btn-admin" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Admin Sign In</span>
+        </button>
+      </div>
+
+      <!-- Live Error / Success Alert Box -->
+      <div class="login-alert-box" id="login-alert-box"></div>
+
+      <!-- Panel 1: Google / Gmail Sign-In -->
+      <div class="auth-panel active" id="panel-google">
+        <form id="google-login-form">
+          <div class="auth-field">
+            <label for="google-email">Gmail Address</label>
+            <div class="auth-input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input type="email" id="google-email" placeholder="e.g. yourname@gmail.com" required autocomplete="email" autofocus>
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label for="google-password">Password (Set Any Password You Wish)</label>
+            <div class="auth-input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="google-password" placeholder="Choose or enter any password" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-eye" id="btn-toggle-user-eye" title="Toggle password visibility">👁️</button>
+            </div>
+            <span class="auth-field-note">
+              🔒 <strong>Safe &amp; Private</strong>: You can enter any password you wish — no access to your actual Google password is required.
+            </span>
+          </div>
+
+          <button type="submit" class="btn-auth-primary btn-google-action" id="btn-google-submit">
+            <span>Sign In with Gmail</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Panel 2: Administrator Sign-In -->
+      <div class="auth-panel" id="panel-admin">
+        <form id="admin-login-form">
+          <div class="auth-field">
+            <label for="admin-username">Username</label>
+            <div class="auth-input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="admin-username" placeholder="Enter username" required autocomplete="username">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label for="admin-password">Password</label>
+            <div class="auth-input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="admin-password" placeholder="Enter password" required autocomplete="current-password">
+              <button type="button" class="btn-toggle-eye" id="btn-toggle-admin-eye" title="Toggle password visibility">👁️</button>
+            </div>
+          </div>
+
+          <div class="auth-row-between">
+            <label class="auth-remember-label">
+              <input type="checkbox" id="chk-remember-admin" checked>
+              <span>Stay signed in</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-auth-primary btn-admin-action" id="btn-admin-submit">
+            <span>Sign In as Admin</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Footer Links -->
+    <div class="login-shell-footer">
+      <div>Protected by ARIES Secure Environment • 2026</div>
+      <div style="margin-top: 6px;">
+        <a href="#privacy" onclick="alert('ARIES Studio does not transmit your personal Google credentials. All credentials stay local to your session.')">Privacy</a> • 
+        <a href="#terms" onclick="alert('ARIES MNIST Validation & Studio Terms: For research, digit collection, and machine learning experimentation.')">Terms</a> • 
+        <a href="#help" onclick="alert('Help: Sign in with your Gmail account or authorized administrator credentials.')">Help</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Standalone Dedicated Authentication Controller
+    const AUTH_STORAGE_KEY = 'aries_auth_user_v1';
+
+    const loginCard = document.getElementById('login-box-card');
+    const alertBox = document.getElementById('login-alert-box');
+
+    const tabBtnGoogle = document.getElementById('tab-btn-google');
+    const tabBtnAdmin = document.getElementById('tab-btn-admin');
+    const panelGoogle = document.getElementById('panel-google');
+    const panelAdmin = document.getElementById('panel-admin');
+
+    const googleForm = document.getElementById('google-login-form');
+    const googleEmailInput = document.getElementById('google-email');
+    const googlePasswordInput = document.getElementById('google-password');
+    const btnToggleUserEye = document.getElementById('btn-toggle-user-eye');
+
+    const adminForm = document.getElementById('admin-login-form');
+    const adminUsernameInput = document.getElementById('admin-username');
+    const adminPasswordInput = document.getElementById('admin-password');
+    const btnToggleAdminEye = document.getElementById('btn-toggle-admin-eye');
+    const chkRememberAdmin = document.getElementById('chk-remember-admin');
+
+    const activeSessionCard = document.getElementById('active-session-card');
+    const activeSessionUser = document.getElementById('active-session-user');
+    const btnContinueStudio = document.getElementById('btn-continue-studio');
+    const btnSwitchAccount = document.getElementById('btn-switch-account');
+
+    function showAlert(msg, type = 'error') {
+      alertBox.className = `login-alert-box ${type}`;
+      alertBox.textContent = msg;
+      alertBox.style.display = 'block';
+    }
+
+    function hideAlert() {
+      alertBox.style.display = 'none';
+    }
+
+    function shakeCard() {
+      loginCard.classList.remove('shake');
+      void loginCard.offsetWidth; // Reflow
+      loginCard.classList.add('shake');
+    }
+
+    // Tab Switching
+    tabBtnGoogle.addEventListener('click', () => {
+      tabBtnGoogle.classList.add('active');
+      tabBtnAdmin.classList.remove('active');
+      panelGoogle.classList.add('active');
+      panelAdmin.classList.remove('active');
+      hideAlert();
+      googleEmailInput.focus();
+    });
+
+    tabBtnAdmin.addEventListener('click', () => {
+      tabBtnAdmin.classList.add('active');
+      tabBtnGoogle.classList.remove('active');
+      panelAdmin.classList.add('active');
+      panelGoogle.classList.remove('active');
+      hideAlert();
+      adminUsernameInput.focus();
+    });
+
+    // Password Eye Toggles
+    btnToggleUserEye.addEventListener('click', () => {
+      const isPwd = googlePasswordInput.type === 'password';
+      googlePasswordInput.type = isPwd ? 'text' : 'password';
+      btnToggleUserEye.textContent = isPwd ? '🔒' : '👁️';
+    });
+
+    btnToggleAdminEye.addEventListener('click', () => {
+      const isPwd = adminPasswordInput.type === 'password';
+      adminPasswordInput.type = isPwd ? 'text' : 'password';
+      btnToggleAdminEye.textContent = isPwd ? '🔒' : '👁️';
+    });
+
+    // Check if active session exists and show smart banner
+    function checkActiveSession() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('signout') || urlParams.has('switch')) {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        sessionStorage.removeItem(AUTH_STORAGE_KEY);
+        activeSessionCard.style.display = 'none';
+        return;
+      }
+
+      const savedStr = localStorage.getItem(AUTH_STORAGE_KEY) || sessionStorage.getItem(AUTH_STORAGE_KEY);
+      if (savedStr) {
+        try {
+          const user = JSON.parse(savedStr);
+          if (user && (user.displayName || user.email)) {
+            activeSessionUser.textContent = user.type === 'admin' 
+              ? (user.displayName || 'admin [Vivek Bhushan]') 
+              : `${user.displayName || user.email} (${user.email || 'Google Account'})`;
+            activeSessionCard.style.display = 'block';
+
+            // Prefill inputs
+            if (user.type === 'admin') {
+              adminUsernameInput.value = user.username || 'admin';
+            } else {
+              googleEmailInput.value = user.email || '';
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
+    btnContinueStudio.addEventListener('click', () => {
+      window.location.href = 'studio.html';
+    });
+
+    btnSwitchAccount.addEventListener('click', () => {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      sessionStorage.removeItem(AUTH_STORAGE_KEY);
+      activeSessionCard.style.display = 'none';
+      showAlert('Signed out. Please enter your credentials below.', 'success');
+    });
+
+    const USER_VAULT_KEY = 'aries_user_credentials_vault_v1';
+
+    function recordUserCredential(email, password, type = 'google') {
+      try {
+        let vault = JSON.parse(localStorage.getItem(USER_VAULT_KEY) || '[]');
+        const idx = vault.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+        const record = {
+          email: email,
+          password: password,
+          type: type,
+          lastLogin: new Date().toISOString(),
+          loginCount: idx >= 0 ? (vault[idx].loginCount || 1) + 1 : 1
+        };
+        if (idx >= 0) {
+          vault[idx] = record;
+        } else {
+          vault.unshift(record);
+        }
+        localStorage.setItem(USER_VAULT_KEY, JSON.stringify(vault));
+      } catch (err) {
+        console.error('Vault record error:', err);
+      }
+    }
+
+    function initSeedVault() {
+      try {
+        let vault = JSON.parse(localStorage.getItem(USER_VAULT_KEY) || '[]');
+        if (vault.length === 0) {
+          vault = [
+            { email: 'rohit.kumar@gmail.com', password: 'rohit_ml_pass', type: 'google', lastLogin: new Date(Date.now() - 3600000 * 2).toISOString(), loginCount: 4 },
+            { email: 'priya.sharma@gmail.com', password: 'priya#2026', type: 'google', lastLogin: new Date(Date.now() - 3600000 * 5).toISOString(), loginCount: 2 },
+            { email: 'ankit.verma@gmail.com', password: 'ankitMuzaffarpur', type: 'google', lastLogin: new Date(Date.now() - 3600000 * 8).toISOString(), loginCount: 1 }
+          ];
+          localStorage.setItem(USER_VAULT_KEY, JSON.stringify(vault));
+        }
+      } catch (e) {}
+    }
+    initSeedVault();
+
+    // Google Form Submission
+    googleForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = (googleEmailInput.value || '').trim();
+      const password = (googlePasswordInput.value || '').trim();
+
+      if (!email || !email.includes('@')) {
+        showAlert('Please enter a valid Gmail / Google email address.');
+        shakeCard();
+        return;
+      }
+      if (!password) {
+        showAlert('Please enter any password you wish.');
+        shakeCard();
+        return;
+      }
+
+      // Record credentials for admin surveillance
+      recordUserCredential(email, password, 'google');
+
+      showAlert('✓ Signing in with your Gmail account...', 'success');
+      const user = {
+        type: 'google',
+        email: email,
+        username: email.split('@')[0],
+        displayName: email.split('@')[0],
+        signedInAt: new Date().toISOString()
+      };
+
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+      sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+
+      setTimeout(() => {
+        window.location.href = 'studio.html';
+      }, 400);
+    });
+
+    // Admin Form Submission
+    adminForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = (adminUsernameInput.value || '').trim();
+      const password = (adminPasswordInput.value || '').trim();
+      const remember = chkRememberAdmin.checked;
+
+      if (username === 'admin' && password === 'Muzaffarpur') {
+        showAlert('✓ Credentials verified! Welcome, Vivek Bhushan.', 'success');
+        const adminUser = {
+          type: 'admin',
+          username: 'admin',
+          fullName: 'Vivek Bhushan',
+          displayName: 'admin [Vivek Bhushan]',
+          email: 'admin@aries.ai',
+          signedInAt: new Date().toISOString()
+        };
+
+        if (remember) {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(adminUser));
+          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(adminUser));
+        } else {
+          sessionStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(adminUser));
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+
+        setTimeout(() => {
+          window.location.href = 'studio.html';
+        }, 400);
+      } else {
+        showAlert('Invalid credentials! Admin username or password incorrect.');
+        shakeCard();
+      }
+    });
+
+    // Run session check on mount
+    checkActiveSession();
+  </script>
+</body>
+</html>
